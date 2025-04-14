@@ -1,0 +1,10 @@
+fastapi==0.115.12
+uvicorn==0.34.1
+beautifulsoup4==4.13.3
+requests==2.32.3
+transformers==4.51.3
+pydantic==2.11.3
+torch
+redis==5.0.3
+python-logging-loki==0.3.1
+aioredis==2.0.1
