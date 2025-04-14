@@ -62,48 +62,6 @@ http://127.0.0.1:8000
 
 3. Enter the URL of a security blog post and click "Analyze"
 
-## Example Output
-
-The tool provides structured output including:
-
-```
-Threat: [Identified Threat Name]
-
-Overview:
-[Concise summary of the security incident or vulnerability]
-
-Technical Analysis:
-
-Vulnerability Analysis:
-• [Detailed vulnerability information]
-• [CVE references]
-
-Malware Behavior:
-• [Detailed malware actions and capabilities]
-• [Command and control information]
-
-System Artifacts:
-• [File paths]
-• [Registry keys]
-• [Process information]
-
-Network Indicators:
-• [IP addresses]
-• [Domains]
-• [Network protocols used]
-
-Attack Techniques:
-• [MITRE ATT&CK references]
-• [Attack methodologies]
-
-Detection Methods:
-• [YARA rules]
-• [Detection signatures]
-• [Log sources]
-
-Indicators of Compromise (IOCs):
-• [List of extracted IOCs]
-```
 
 ## Optional Features
 
