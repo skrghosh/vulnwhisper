@@ -341,63 +341,57 @@ def extract_technical_details(text: str) -> dict:
         'detection_methods': []
     }
     
-    # Vulnerability patterns
+    # Vulnerability patterns - more precise
     vuln_patterns = [
         r'(?i)CVE-\d{4}-\d{4,7}',
-        r'(?i)(?:critical|high|medium|low)\s+severity\s+(?:vulnerability|flaw)',
-        r'(?i)(?:zero-day|0-day)\s+(?:vulnerability|exploit)',
-        r'(?i)CVSS\s*(?:v\d\s*)?(?:score|rating)\s*:\s*\d+(?:\.\d+)?'
+        r'(?i)(?:critical|high|medium|low)\s+severity\s+vulnerability',
+        r'(?i)(?:zero-day|0-day)\s+vulnerability',
+        r'(?i)CVSS\s*v\d\s*score:\s*\d+\.\d+'
     ]
     
-    # Malware behavior patterns
+    # Malware behavior patterns - focused on specific actions
     behavior_patterns = [
-        r'(?i)(?:drops?|downloads?|executes?|creates?)\s+(?:file|payload|shellcode)',
-        r'(?i)(?:establishes?|initiates?)\s+(?:connection|c2|command\s*(?:and|&)\s*control)',
-        r'(?i)(?:encrypts?|exfiltrates?|steals?)\s+(?:files?|data|information)',
-        r'(?i)(?:persistence|startup|registry)\s+(?:mechanism|technique|method)',
-        r'(?i)(?:privilege|access)\s+(?:escalation|elevation)',
-        r'(?i)(?:keylogging|screenshots?|surveillance)',
-        r'(?i)(?:anti-(?:virus|debug|vm|analysis))'
+        r'(?i)(?:malware|sample)\s+(?:drops?|downloads?|executes?)\s+(?:file|payload)',
+        r'(?i)(?:establishes?|initiates?)\s+(?:C2|command\s*and\s*control)',
+        r'(?i)(?:steals?|exfiltrates?)\s+(?:data|credentials|files)',
+        r'(?i)persistence\s+mechanism:\s*[^\.]+',
+        r'(?i)privilege\s+escalation\s+(?:through|via|using)'
     ]
     
-    # System artifact patterns
+    # System artifacts patterns - specific to technical indicators
     artifact_patterns = [
-        r'(?i)file\s*path\s*:\s*(?:[A-Za-z]:\\|\/)[^\s,]+',
-        r'(?i)registry\s*key\s*:\s*HKEY_[^,\s]+',
-        r'(?i)process\s*(?:name|path)\s*:\s*[^\s,]+\.(?:exe|dll)',
-        r'(?i)(?:file|process)\s+hash\s*:\s*[a-fA-F0-9]+',
-        r'(?i)(?:scheduled task|service)\s+name\s*:\s*[^\s,]+',
-        r'(?i)command\s*line\s*:\s*[`"\'][^`"\']+[`"\']'
+        r'(?i)file\s*path:\s*(?:[A-Za-z]:\\|\/)[^\s,]+',
+        r'(?i)registry\s*key:\s*HKEY_[^\s,]+',
+        r'(?i)process\s*name:\s*[^\s,]+\.(?:exe|dll)',
+        r'(?i)(?:MD5|SHA1|SHA256):\s*[a-fA-F0-9]+',
+        r'(?i)scheduled\s+task:\s*[^\s,]+'
     ]
     
-    # Network indicator patterns
+    # Network indicator patterns - specific to networking
     network_patterns = [
-        r'(?i)(?:ip|host)\s*:\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}',
-        r'(?i)(?:domain|c2|url)\s*:\s*(?:https?:\/\/)?[\w\-\.]+\.[a-zA-Z]{2,}[^\s]*',
-        r'(?i)port\s*:\s*\d+(?:\/(?:tcp|udp))?',
-        r'(?i)protocol\s*:\s*(?:http|https|ftp|smb|rdp|ssh|dns)',
-        r'(?i)user\-agent\s*:\s*[^\n]+',
-        r'(?i)(?:http|dns|network)\s+traffic\s+pattern'
+        r'(?i)C2\s+(?:server|domain):\s*[^\s,]+',
+        r'(?i)(?:IP|host):\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}',
+        r'(?i)port:\s*\d+(?:\/(?:tcp|udp))?',
+        r'(?i)(?:http|https|ftp|smb|rdp)\s+traffic\s+(?:to|from)',
+        r'(?i)DNS\s+query:\s*[^\s,]+'
     ]
     
-    # Attack technique patterns
+    # Attack technique patterns - specific to MITRE and known techniques
     technique_patterns = [
-        r'(?i)MITRE\s+ATT&CK\s*:\s*T\d{4}(?:\.\d{3})?',
-        r'(?i)(?:lateral movement|pivoting)',
-        r'(?i)(?:credential|password|token)\s+(?:theft|dumping|harvesting)',
-        r'(?i)(?:memory|process)\s+injection',
-        r'(?i)(?:dll|process)\s+hollowing',
-        r'(?i)(?:rootkit|bootkit)',
-        r'(?i)(?:fileless|living off the land|lolbas)'
+        r'(?i)MITRE\s+ATT&CK:\s*T\d{4}(?:\.\d{3})?',
+        r'(?i)technique\s*ID:\s*T\d{4}(?:\.\d{3})?',
+        r'(?i)lateral\s+movement\s+(?:using|via|through)',
+        r'(?i)memory\s+injection\s+(?:using|via|method)',
+        r'(?i)living\s+off\s+the\s+land\s+(?:using|via|with)'
     ]
     
-    # Detection method patterns
+    # Detection methods patterns - specific to security tools and methods
     detection_patterns = [
-        r'(?i)(?:yara|sigma|snort)\s+rule',
-        r'(?i)(?:ioc|indicator)\s+type\s*:\s*[^\n]+',
-        r'(?i)detection\s+(?:method|technique)\s*:\s*[^\n]+',
-        r'(?i)(?:firewall|ids|ips)\s+(?:rule|signature|alert)',
-        r'(?i)(?:event\s+id|log\s+source)\s*:\s*[^\n]+'
+        r'(?i)YARA\s+rule:\s*[^\n]+',
+        r'(?i)Sigma\s+rule:\s*[^\n]+',
+        r'(?i)detection\s+method:\s*[^\n]+',
+        r'(?i)IOC\s+type:\s*[^\n]+',
+        r'(?i)(?:Sysmon|EDR)\s+event\s+ID:\s*\d+'
     ]
     
     pattern_categories = [
@@ -414,22 +408,24 @@ def extract_technical_details(text: str) -> dict:
         for pattern in patterns:
             matches = re.finditer(pattern, text)
             for match in matches:
-                # Get more context around the match
-                start = max(0, match.start() - 150)
-                end = min(len(text), match.end() + 150)
+                # Get context around the match
+                start = max(0, match.start() - 100)  # Reduced context
+                end = min(len(text), match.end() + 100)  # Reduced context
                 context = text[start:end].strip()
                 
                 # Clean up the context
                 context = re.sub(r'\s+', ' ', context)
                 context = context.replace('\n', ' ').strip()
                 
-                if context not in technical_info[category]:
+                # Only add if it's not a subset of existing entries
+                if not any(context in existing or existing in context 
+                          for existing in technical_info[category]):
                     technical_info[category].append(context)
     
     return technical_info
 
 def format_technical_details(details: dict) -> str:
-    """Format technical details into a structured summary."""
+    """Format technical details into a structured summary with clear section separation."""
     sections = []
     
     section_titles = {
@@ -443,9 +439,11 @@ def format_technical_details(details: dict) -> str:
     
     for category, items in details.items():
         if items:
-            section = f"\n{section_titles[category]}:\n"
+            # Add visual separation for each section with 10 asterisks
+            section = f"\n{'*'*10}\n{section_titles[category]}\n{'*'*10}\n\n"
             for item in items:
-                section += f"• {item}\n"
+                # Format each item with bullet points and ensure line breaks
+                section += f"• {item.strip()}\n\n"
             sections.append(section)
     
     return '\n'.join(sections) if sections else ""
@@ -719,15 +717,31 @@ async def summarize_blog(blog_url: BlogURL):
                     if tech_details and tech_details not in main_summary:
                         main_summary = f"{main_summary}\n\n{tech_details}"
         
-        # Format the final summary with sections
-        final_summary = f"Overview:\n{main_summary}\n"
+        # Format the final summary with clear section separation and proper line breaks
+        final_summary = (
+            f"{'*'*10}\n"
+            f"OVERVIEW\n"
+            f"{'*'*10}\n\n"
+            f"{main_summary}\n"
+        )
         
         if threat_name:
-            final_summary = f"Threat: {threat_name}\n\n{final_summary}"
+            final_summary = (
+                f"{'*'*10}\n"
+                f"THREAT\n"
+                f"{'*'*10}\n\n"
+                f"{threat_name}\n\n"
+                f"{final_summary}"
+            )
         
         if formatted_technical_details:
-            final_summary += f"\nTechnical Analysis:\n{formatted_technical_details}"
-        
+            final_summary += (
+                f"\n{'*'*10}\n"
+                f"TECHNICAL ANALYSIS\n"
+                f"{'*'*10}\n"
+                f"{formatted_technical_details}"
+            )
+
         # Create summary object
         result = Summary(
             summary=final_summary,
